@@ -1,102 +1,128 @@
-import Image from 'next/image'
+'use client'
+
+import {Footer} from '@/components/footer'
+import {Container} from '@/components/container/container'
+import {Header} from '@/components/header'
+import {ChevronRight} from 'lucide-react'
+import Link from 'next/link'
+import * as React from 'react'
+import {useEffect, useState} from 'react'
+import api from '@/lib/api'
+import {Book, DiscussedBook, Genre} from '@/types/book'
+import {GenreCard} from '@/components/genre-card'
+import {BookCard} from '@/components/book-card'
+import {getQuantityString} from '@/lib/format-text'
+import {shuffle} from '@/lib/utils'
 
 export default function Home() {
-    return (
-        <div
-            className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-            <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-                <Image
-                    className="dark:invert"
-                    src="/next.svg"
-                    alt="Next.js logo"
-                    width={180}
-                    height={38}
-                    priority
-                />
-                <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-                    <li className="mb-2">
-                        Get started by editing{' '}
-                        <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-                            src/app/page.tsx
-                        </code>
-                        .
-                    </li>
-                    <li>Save and see your changes instantly.</li>
-                </ol>
+    const [latestBooks, setLatestBooks] = useState<Book[]>()
+    const [discussedBooks, setDiscussedBooks] = useState<DiscussedBook[]>()
 
-                <div className="flex gap-4 items-center flex-col sm:flex-row">
-                    <a
-                        className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-                        href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        <Image
-                            className="dark:invert"
-                            src="/vercel.svg"
-                            alt="Vercel logomark"
-                            width={20}
-                            height={20}
-                        />
-                        Deploy now
-                    </a>
-                    <a
-                        className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-                        href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        Read our docs
-                    </a>
-                </div>
-            </main>
-            <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-                <a
-                    className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-                    href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    <Image
-                        aria-hidden
-                        src="/file.svg"
-                        alt="File icon"
-                        width={16}
-                        height={16}
-                    />
-                    Learn
-                </a>
-                <a
-                    className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-                    href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    <Image
-                        aria-hidden
-                        src="/window.svg"
-                        alt="Window icon"
-                        width={16}
-                        height={16}
-                    />
-                    Examples
-                </a>
-                <a
-                    className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-                    href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    <Image
-                        aria-hidden
-                        src="/globe.svg"
-                        alt="Globe icon"
-                        width={16}
-                        height={16}
-                    />
-                    Go to nextjs.org →
-                </a>
-            </footer>
-        </div>
+    useEffect(() => {
+        api.get('/books/latest?limit=6').then(response => {
+            const books = response.data as Book[]
+            setLatestBooks(books.sort((a, b) => b.publicationDate - a.publicationDate))
+        }).catch(error => console.log(error))
+
+        api.get('/books/discussed').then(response => {
+            setDiscussedBooks(response.data)
+        }).catch(error => console.log(error))
+    }, [])
+
+    const [genres, setGenres] = useState<Genre[]>()
+
+    useEffect(() => {
+        api.get('/genres').then(response => {
+            setGenres(shuffle(response.data))
+        }).catch(error => console.log(error))
+    }, [])
+    return (
+        <>
+            <Header/>
+
+            <div className="flex-1 pb-4 mt-4">
+                <Container>
+                    <div>
+                        <Link href="/books/latest" className={'flex text-xl font-bold items-center max-w-max'}>
+                            <p>Новые книги</p>
+                            <ChevronRight size={18}/>
+                        </Link>
+                        <p className={'text-zinc-400 text-sm'}>Самые новые и свежие книги на любимом сайте</p>
+                    </div>
+                    <div className="grid grid-cols-6 max-sm:grid-cols-2 max-xl:grid-cols-4 gap-4 mt-4">
+                        {latestBooks && latestBooks.map(book => {
+                            return <BookCard key={book.slug} book={book}/>
+                        })}
+                    </div>
+                </Container>
+
+                {discussedBooks && discussedBooks.length === 3 && (
+                    <Container className="mt-6">
+                        <div>
+                            <p className={'text-xl font-bold'}>Обсуждаемое сегодня</p>
+                            <p className={'text-zinc-400 text-sm'}>Обсуждаемые книги дня</p>
+                        </div>
+                        <div className="flex max-md:flex-col gap-4 mt-4">
+                            {discussedBooks.map(({book, commentCount}) => {
+                                return (
+                                    <Link
+                                        key={book.slug}
+                                        href={`/books/${book.slug}`}
+                                        className={'bg-footer flex overflow-hidden justify-center rounded-lg h-[200px] w-full'}>
+                                        <img
+                                            className="h-full object-cover flex-shrink-0"
+                                            src={book.imageUrl}
+                                            alt={book.title}/>
+                                        <div className={'flex-1 flex flex-col p-4 justify-between'}>
+                                            <div className={'flex-1'}>
+                                                <p className={'text-sm'}>{book.title}</p>
+                                                <p className={'line-clamp-1 text-xs text-zinc-500'}>{book.authors.join(', ')}</p>
+                                            </div>
+                                            <div className={'text-xs text-zinc-400 flex flex-col gap-1'}>
+                                                <p>
+                                                    <b>{book.pages}</b>{' '}{getQuantityString(book.pages, 'страниц', 'страницы', 'страниц')}
+                                                </p>
+                                                <div
+                                                    className={'bg-black/20 text-zinc-500 p-1 rounded-lg max-w-max px-2'}>
+                                                    <b>{commentCount} {getQuantityString(commentCount, 'комментарий', 'комментария', 'комментариев')}</b>{' '}за
+                                                    сутки
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </Link>
+                                )
+                            })}
+                        </div>
+                    </Container>
+                )}
+
+                <Container className="mt-6">
+                    <div className={'bg-footer h-[180px] rounded-md text-center content-center'}>
+                        <p className={'text-zinc-400 text-sm'}>Здесь может быть Ваш рекламный блок</p>
+                        <p className={'text-zinc-400 text-sm'}>
+                            По всем вопросам:{' '}
+                            <b className={'text-zinc-400 hover-underline'}>contact@example.com</b>
+                        </p>
+                    </div>
+                </Container>
+
+                <Container className="mt-6">
+                    <div>
+                        <Link href="/genres" className={'flex text-xl font-bold items-center max-w-max'}>
+                            <p>Жанры</p>
+                            <ChevronRight size={18}/>
+                        </Link>
+                        <p className={'text-zinc-400 text-sm'}>Список жанров на любой вкус и цвет</p>
+                    </div>
+                    <div className="grid grid-cols-6 max-sm:grid-cols-2 max-xl:grid-cols-4 gap-4 mt-4">
+                        {genres && genres.slice(0, 6).map(genre => {
+                            return <GenreCard key={genre.slug} genre={genre}/>
+                        })}
+                    </div>
+                </Container>
+            </div>
+
+            <Footer/>
+        </>
     )
 }

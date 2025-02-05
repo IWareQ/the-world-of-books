@@ -4,13 +4,15 @@ import {getQuantityString} from '@/lib/format-text'
 import {Comment} from '@/types/book'
 import {Button} from '@/components/ui/button'
 import {getCurrentSession} from '@/lib/get-current-session'
+import {Edit, Trash} from 'lucide-react'
 
 type Props = {
     comment: Comment
     onClickEditMessageButton: () => void
+    onClickDeleteMessageButton: () => void
 };
 
-export function ReviewCard({comment, onClickEditMessageButton}: Props) {
+export function ReviewCard({comment, onClickEditMessageButton, onClickDeleteMessageButton}: Props) {
     const timeAgo = getTimeAgo(new Date(comment.createdAt))
     return (
         <>
@@ -30,9 +32,12 @@ export function ReviewCard({comment, onClickEditMessageButton}: Props) {
                     </div>
 
                     {comment.author.id === getCurrentSession()?.id && (
-                        <div>
-                            <Button onClick={onClickEditMessageButton}>Изменить</Button>
-                        </div>
+                        <>
+                            <div className={'flex gap-4'}>
+                                <Button onClick={onClickEditMessageButton} variant={'outline'}><Edit/></Button>
+                                <Button onClick={onClickDeleteMessageButton} variant={'outline'}><Trash/></Button>
+                            </div>
+                        </>
                     )}
                 </div>
 

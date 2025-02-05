@@ -15,7 +15,7 @@ const NAVIGATION_PANEL = [
     {
         name: 'Пользователь',
         items: [
-            {label: 'Техническая поддержка', href: 'mailto:support@example.com'},
+            {label: 'Техническая поддержка', href: 'mailto:support@example.com'}
         ]
     }
 ]
@@ -43,7 +43,7 @@ export function Footer(props: Props) {
                         </div>
                     </div>
 
-                    <div className={'md:flex gap-[10rem]'}>
+                    <div className={'md:flex gap-40'}>
                         {NAVIGATION_PANEL.map(nav => {
                             return (
                                 <div key={nav.name}>
@@ -77,7 +77,7 @@ export function Footer(props: Props) {
                             </p>
                         </div>
 
-                        <div className={'flex gap-[5px]'}>
+                        <div className={'flex gap-4'}>
                             {SOCIALS.map(social => {
                                 return (
                                     <a

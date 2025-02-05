@@ -33,7 +33,7 @@ export default function Home() {
         <>
             <Header/>
 
-            <div className="flex-1 pb-4">
+            <div className="flex-1 mb-4">
                 {latestBooks && (
                     <Container className="mt-4">
                         <Breadcrumb>

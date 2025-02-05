@@ -38,7 +38,7 @@ export function SearchDialog({open, setOpen}: Props) {
     return (
         <>
             <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent className={'h-[70%] flex flex-col max-md:w-[380px] rounded-md'}>
+                <DialogContent className={'h-[70%] flex flex-col max-md:max-w-sm rounded-md'}>
                     <VisuallyHidden>
                         <DialogTitle>Для скринридеров</DialogTitle>
                     </VisuallyHidden>
@@ -61,7 +61,7 @@ export function SearchDialog({open, setOpen}: Props) {
                                 return (
                                     <Link key={book.slug} href={'/books/' + book.slug}>
                                         <div className={'flex items-center hover:bg-black/10 rounded-md'}>
-                                            <div className={'h-max w-[50px] flex-shrink-0 overflow-hidden'}>
+                                            <div className={'h-max w-[4rem] flex-shrink-0 overflow-hidden'}>
                                                 <img
                                                     src={book.imageUrl}
                                                     alt={book.title}
@@ -70,7 +70,7 @@ export function SearchDialog({open, setOpen}: Props) {
                                             <div className={'ml-4'}>
                                                 <p className={'line-clamp-1'}>{book.title}</p>
                                                 <p className={'text-sm text-zinc-500 line-clamp-1'}>{book.authors.join(', ')}</p>
-                                                <p className={'text-sm text-zinc-500'}>{book.publicationDate} • {book.ageRestriction}+</p>
+                                                <p className={'text-sm text-zinc-500'}>{new Date(book.publicationDate).getFullYear()} • {book.ageRestriction}+</p>
                                             </div>
                                         </div>
                                         {index !== books.length - 1 && <hr className="my-4 bg-white"/>}
@@ -85,6 +85,7 @@ export function SearchDialog({open, setOpen}: Props) {
                             Данное поисковое окно можно вызывать в любое время клавишей{' '}
                             <Badge variant={'outline'}>/</Badge>
                         </span>
+                        <br/>
                         <span>
                             Чтобы закрыть поиск, вы можете нажать{' '}
                             <Badge variant={'outline'}>Esc</Badge>

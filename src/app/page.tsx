@@ -68,7 +68,7 @@ export default function Home() {
                                     <Link
                                         key={book.slug}
                                         href={`/books/${book.slug}`}
-                                        className={'bg-footer flex overflow-hidden justify-center rounded-lg h-[200px] w-full'}>
+                                        className={'bg-footer flex overflow-hidden justify-center rounded-lg h-[13rem] w-full'}>
                                         <img
                                             className="h-full object-cover flex-shrink-0"
                                             src={book.imageUrl}
@@ -97,7 +97,7 @@ export default function Home() {
                 )}
 
                 <Container className="mt-6">
-                    <div className={'bg-footer h-[180px] rounded-md text-center content-center'}>
+                    <div className={'bg-footer h-[11rem] rounded-md text-center content-center'}>
                         <p className={'text-zinc-400 text-sm'}>Здесь может быть Ваш рекламный блок</p>
                         <p className={'text-zinc-400 text-sm'}>
                             По всем вопросам:{' '}

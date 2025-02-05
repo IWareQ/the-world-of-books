@@ -55,7 +55,7 @@ export default function GenrePage({
         <>
             <Header/>
 
-            <div className="flex-1 pb-4">
+            <div className="flex-1 mb-4">
                 {genre && (
                     <Container className="mt-4">
                         <Breadcrumb>
@@ -83,7 +83,7 @@ export default function GenrePage({
                                 <img
                                     src={genre.imageUrl}
                                     alt={genre.name}
-                                    className="w-[75px] h-[75px] overflow-hidden object-cover flex-shrink-0 rounded-sm"/>
+                                    className="w-20 h-20 overflow-hidden object-cover flex-shrink-0 rounded-sm"/>
                                 <div>
                                     <p className={'text-xl font-medium'}>{genre.name}</p>
                                     <p className={'text-sm text-zinc-400'}>{genre.totalBooks} {getQuantityString(genre.totalBooks, 'книга', 'книги', 'книг')}</p>

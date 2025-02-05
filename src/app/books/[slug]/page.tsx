@@ -38,6 +38,8 @@ import {zodResolver} from '@hookform/resolvers/zod'
 import {Form, FormControl, FormDescription, FormField, FormItem, FormMessage} from '@/components/ui/form'
 import {Textarea} from '@/components/ui/textarea'
 import {getCurrentSession} from '@/lib/get-current-session'
+import {useAuth} from '@/context/AuthContext'
+import Cookies from 'js-cookie'
 
 const commentFormSchema = z.object({
     text: z.string().min(10, {
@@ -55,14 +57,16 @@ export default function Page({
     const {slug} = use(params)
     const [error, setError] = useState(false)
 
-    const [show18Plus, setShow18Plus] = useState(false)
+    const [adultConfirmed, setAdultConfirmed] = useState(false)
+
+    const {session, requireAuth} = useAuth()
 
     const [book, setBook] = useState<Book>()
     useEffect(() => {
         api.get(`/books/${slug}`).then(response => {
             setBook(response.data)
 
-            setShow18Plus(response.data.ageRestriction >= 18)
+            setAdultConfirmed(!Cookies.get('adultConfirmed') && response.data.ageRestriction >= 18)
         }).catch(error => {
             setError(true)
             console.error('Ошибка при загрузке случайной книги:', error)
@@ -83,7 +87,6 @@ export default function Page({
     }, [])
 
     const [canComment, setCanComment] = useState(false)
-    const [sortedComments, setSortedComments] = useState<Comment[]>([])
     const [alreadyCommented, setAlreadyCommented] = useState(false)
 
     useEffect(() => {
@@ -97,12 +100,6 @@ export default function Page({
 
 
         if (book) {
-            setSortedComments(book.comments.sort((a, b) => {
-                if (a.author.id === session.id) return -1
-                if (b.author.id === session.id) return 1
-                return 0
-            }))
-
             setAlreadyCommented(book.comments.some(comment => comment.author.id === session.id))
         }
     }, [book])
@@ -136,12 +133,26 @@ export default function Page({
         commentForm.setValue('text', comment.text)
     }
 
+    function handleDeleteCommentButton(comment: Comment) {
+        api.delete(`/books/${slug}/comments/${comment.id}`).then(() => {
+            setBook(prev => {
+                if (prev) {
+                    prev.comments = prev.comments.filter(comment => comment.id !== comment.id)
+                }
+                return prev
+            })
+            setAlreadyCommented(false)
+            setCanComment(true)
+            commentForm.setValue('text', '')
+        })
+    }
+
     return (
         <>
             <Header/>
 
-            <AlertDialog open={show18Plus}>
-                <AlertDialogContent className={'flex flex-col items-center'}>
+            <AlertDialog open={adultConfirmed}>
+                <AlertDialogContent className={'flex flex-col items-center max-md:max-w-sm'}>
                     <AlertDialogHeader>
                         <AlertDialogTitle className={'flex justify-center'}>
                             <Image src={'/cake.svg'} alt={'cake'} width={128} height={128} className={'dark:invert'}/>
@@ -155,10 +166,16 @@ export default function Page({
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter className={''}>
-                        <AlertDialogCancel onClick={() => setShow18Plus(false)} asChild><Button variant={'destructive'}>Мне
-                            есть 18</Button></AlertDialogCancel>
+                        <AlertDialogCancel onClick={() => {
+                            Cookies.set('adultConfirmed', 'true', {expires: 7}) // 7 дней
+                            setAdultConfirmed(false)
+                        }} asChild>
+                            <Button variant={'destructive'}>Мне есть 18</Button>
+                        </AlertDialogCancel>
                         <Link href={'/'}>
-                            <AlertDialogAction asChild><Button variant={'outline'}>Выйти</Button></AlertDialogAction>
+                            <AlertDialogAction asChild>
+                                <Button variant={'outline'}>Выйти</Button>
+                            </AlertDialogAction>
                         </Link>
                     </AlertDialogFooter>
                 </AlertDialogContent>
@@ -184,12 +201,14 @@ export default function Page({
                                 </BreadcrumbList>
                             </Breadcrumb>
 
-                            <div className={'mt-4 md:flex max-md:justify-items-center gap-[15px]'}>
-                                <img
-                                    src={book.imageUrl}
-                                    alt={book.title}
-                                    className={'aspect-[7/10] rounded-[5px] h-[420px] max-md:h-[430px]'}
-                                />
+                            <div className={'mt-4 md:flex gap-[15px]'}>
+                                <div className={'max-md:flex max-md:justify-center'}>
+                                    <img
+                                        src={book.imageUrl}
+                                        alt={book.title}
+                                        className={'aspect-[7/10] rounded-xl h-[420px] max-md:h-full'}
+                                    />
+                                </div>
 
                                 <div className={'self-end max-md:mt-4'}>
                                     <p className={'text-4xl font-bold'}>{book.title}</p>
@@ -210,11 +229,17 @@ export default function Page({
                                     </div>
 
                                     <div className={'mt-3 flex gap-2'}>
-                                        <Link href={`/read/${book.slug}`}>
-                                            <Button variant="secondary">
-                                                <ReadSvg/> Читать
+                                        {session ? (
+                                            <Link href={`/read/${book.slug}`}>
+                                                <Button variant="secondary">
+                                                    <ReadSvg/>Читать
+                                                </Button>
+                                            </Link>
+                                        ) : (
+                                            <Button variant="secondary" onClick={() => requireAuth()}>
+                                                <ReadSvg/>Читать
                                             </Button>
-                                        </Link>
+                                        )}
 
                                         {/*<Button variant="outline">
                                             <Star size={43}/>
@@ -295,8 +320,12 @@ export default function Page({
                                         </div>
                                     )}
                                     {book.comments.map(comment => {
-                                        return <ReviewCard key={comment.id} comment={comment}
-                                                           onClickEditMessageButton={() => handleEditCommentButton(comment)}/>
+                                        return <ReviewCard
+                                            key={comment.id}
+                                            comment={comment}
+                                            onClickEditMessageButton={() => handleEditCommentButton(comment)}
+                                            onClickDeleteMessageButton={() => handleDeleteCommentButton(comment)}
+                                        />
                                     })}
                                 </div>
                             </div>

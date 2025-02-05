@@ -106,7 +106,7 @@ export function AuthDialog({open, setOpen}: Props) {
     return (
         <>
             <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent className={'h-max flex flex-col rounded-md w-[400px]'}>
+                <DialogContent className={'h-max flex flex-col rounded-md w-[25rem]'}>
                     <VisuallyHidden>
                         <DialogTitle>Для скринридеров</DialogTitle>
                     </VisuallyHidden>

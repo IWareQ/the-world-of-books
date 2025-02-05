@@ -20,7 +20,7 @@ import {BookCard} from '@/components/book-card'
 export default function Home() {
     const [books, setBooks] = useState<Book[]>()
     useEffect(() => {
-        api.get(`/books?limit=9999999999`).then(response => {
+        api.get(`/books?limit=9999999`).then(response => {
             setBooks(response.data)
         }).catch(error => {
             console.error('Ошибка при загрузке жанров:', error)
@@ -31,7 +31,7 @@ export default function Home() {
         <>
             <Header/>
 
-            <div className="flex-1 pb-4">
+            <div className="flex-1 mb-4">
                 {books && (
                     <Container className="mt-4">
                         <Breadcrumb>

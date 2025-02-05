@@ -12,4 +12,5 @@ export type User = {
     role: Role
     comments: Comment[]
     createdAt: string
+    updatedAt: string
 }

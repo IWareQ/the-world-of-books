@@ -18,6 +18,7 @@ import {Book} from '@/types/book'
 import {AuthDialog} from '@/components/auth-dialog'
 import {Drawer, DrawerClose, DrawerContent, DrawerFooter, DrawerTitle, DrawerTrigger} from '@/components/ui/drawer'
 import {VisuallyHidden} from '@radix-ui/react-visually-hidden'
+import {useAuthDialogStore} from '@/store/AuthDialogStore'
 
 const NAVIGATION_MENU = [
     {name: 'Книги', href: '/books'},
@@ -34,7 +35,9 @@ export function Header({hasSearch = true, className}: Props) {
     const router = useRouter()
 
     const [openSearchDialog, setOpenSearchDialog] = useState(false)
-    const [openAuthDialog, setOpenAuthDialog] = useState(false)
+
+    const {isOpen, closeDialog, openDialog} = useAuthDialogStore()
+
     const [isRandomButtonLoading, setIsRandomButtonLoading] = useState(false)
 
     useEffect(() => {
@@ -63,7 +66,7 @@ export function Header({hasSearch = true, className}: Props) {
     return (
         <TooltipProvider delayDuration={0}>
             {hasSearch && <SearchDialog open={openSearchDialog} setOpen={setOpenSearchDialog}/>}
-            <AuthDialog open={openAuthDialog} setOpen={setOpenAuthDialog}/>
+            <AuthDialog open={isOpen} setOpen={closeDialog}/>
 
             <header className={cn('sticky bg-zinc-100 dark:bg-black py-4 w-full', className)}>
                 <Container className="flex items-center justify-between">
@@ -121,7 +124,7 @@ export function Header({hasSearch = true, className}: Props) {
                         {!session && (
                             <Tooltip>
                                 <TooltipTrigger asChild>
-                                    <Button variant={'outline'} onClick={() => setOpenAuthDialog(true)}>
+                                    <Button variant={'outline'} onClick={() => openDialog()}>
                                         <User size={20}/>
                                     </Button>
                                 </TooltipTrigger>
@@ -148,7 +151,7 @@ export function Header({hasSearch = true, className}: Props) {
                                 <VisuallyHidden>
                                     <DrawerTitle></DrawerTitle>
                                 </VisuallyHidden>
-                                <DrawerFooter className={'p-4 flex flex-col gap-4'}>
+                                <DrawerFooter className={'my-2 flex flex-col gap-4'}>
                                     {NAVIGATION_MENU.map(nav => {
                                         return (
                                             <DrawerClose asChild key={nav.name}>

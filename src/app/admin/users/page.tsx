@@ -107,8 +107,11 @@ export default function Home() {
                                     <TableCell>{user.id}</TableCell>
                                     <TableCell>{user.username}</TableCell>
                                     <TableCell>{user.email}</TableCell>
-                                    <TableCell><Badge
-                                        variant={user.role === Role.ADMIN ? 'destructive' : 'outline'}>{user.role}</Badge></TableCell>
+                                    <TableCell>
+                                        <Badge variant={user.role === Role.ADMIN ? 'destructive' : 'outline'}>
+                                            {user.role}
+                                        </Badge>
+                                    </TableCell>
                                     <TableCell>{formatDate(user.createdAt)}</TableCell>
                                     <TableCell>{formatDate(user.updatedAt)}</TableCell>
                                     <TableCell className={'flex gap-4'}>

@@ -17,6 +17,7 @@ import {shuffle} from '@/lib/utils'
 export default function Home() {
     const [latestBooks, setLatestBooks] = useState<Book[]>()
     const [discussedBooks, setDiscussedBooks] = useState<DiscussedBook[]>()
+    const [genres, setGenres] = useState<Genre[]>()
 
     useEffect(() => {
         api.get('/books/latest?limit=6').then(response => {
@@ -27,11 +28,7 @@ export default function Home() {
         api.get('/books/discussed').then(response => {
             setDiscussedBooks(response.data)
         }).catch(error => console.log(error))
-    }, [])
 
-    const [genres, setGenres] = useState<Genre[]>()
-
-    useEffect(() => {
         api.get('/genres').then(response => {
             setGenres(shuffle(response.data))
         }).catch(error => console.log(error))

@@ -26,10 +26,10 @@ export default function Home() {
     const [selectedBook, setSelectedBook] = useState<Book | null>(null)
 
     useEffect(() => {
-        api.get(`/books?limit=99999`).then(response => {
+        api.get(`/books`).then(response => {
             setBooks(response.data)
         }).catch(error => {
-            console.error('Ошибка при загрузке жанров:', error)
+            console.error('Ошибка при загрузке книг:', error)
         })
     }, [])
 

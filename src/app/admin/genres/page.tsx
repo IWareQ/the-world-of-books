@@ -37,7 +37,6 @@ export default function Home() {
         api.delete(`/genres/${genre.id}`).then(() => {
             setGenres(genres.filter(g => g.id !== genre.id))
         }).catch(error => console.log(error))
-
     }
 
     function handleEditGenre(data: z.infer<typeof genreEditFormSchema>) {

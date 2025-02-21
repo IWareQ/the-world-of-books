@@ -64,7 +64,7 @@ export function GenreEditDialog({genre, isOpen, onClose, onSave}: Props) {
                         <FormField
                             control={form.control}
                             name={'image'}
-                            render={({field}) => (
+                            render={() => (
                                 <FormItem>
                                     <FormLabel>Изображение жанра</FormLabel>
                                     <FormControl>

@@ -27,12 +27,8 @@ export function SearchDialog({open, setOpen}: Props) {
         }
 
         api.get(`/books?search=${searchQuery}`).then(response => {
-            if (response.status === 200) {
-                setBooks(response.data)
-            } else {
-                setBooks([])
-            }
-        })
+            setBooks(response.data)
+        }).catch(() => setBooks([]))
     }, 300, [searchQuery])
 
     return (

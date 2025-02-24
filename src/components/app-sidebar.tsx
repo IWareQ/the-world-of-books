@@ -13,7 +13,7 @@ import {
     SidebarRail
 } from '@/components/ui/sidebar'
 import Link from 'next/link'
-import {usePathname} from 'next/navigation'
+import {usePathname, useRouter} from 'next/navigation'
 import Image from 'next/image'
 import {Button} from '@/components/ui/button'
 
@@ -33,12 +33,13 @@ const data = [
 ]
 
 export function AppSidebar({...props}: ComponentProps<typeof Sidebar>) {
+    const router = useRouter()
     const pathname = usePathname()
     return (
         <Sidebar {...props}>
             <SidebarHeader className={'flex flex-row items-center justify-center mt-2'}>
                 <p className={'font-bold'}>Админ-панель</p>
-                <Button variant={'outline'}>
+                <Button variant={'outline'} onClick={() => router.replace('/')}>
                     <Image
                         className={'dark:invert'}
                         src="/exit.svg"

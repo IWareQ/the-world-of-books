@@ -2,7 +2,6 @@
 
 import * as React from 'react'
 import {useEffect, useState} from 'react'
-import {AppSidebar} from '@/components/app-sidebar'
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -12,7 +11,7 @@ import {
     BreadcrumbSeparator
 } from '@/components/ui/breadcrumb'
 import {Separator} from '@/components/ui/separator'
-import {SidebarInset, SidebarProvider, SidebarTrigger} from '@/components/ui/sidebar'
+import {SidebarTrigger} from '@/components/ui/sidebar'
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from '@/components/ui/table'
 import {Badge} from '@/components/ui/badge'
 import {Button} from '@/components/ui/button'
@@ -61,7 +60,7 @@ export default function Home() {
     }
 
     return (
-        <SidebarProvider>
+        <>
             {selectedBook && (
                 <BookEditDialog
                     book={selectedBook}
@@ -70,60 +69,56 @@ export default function Home() {
                     onSave={handleEditBook}
                 />
             )}
-
-            <AppSidebar/>
-            <SidebarInset>
-                <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-                    <SidebarTrigger className="-ml-1"/>
-                    <Separator orientation="vertical" className="mr-2 h-4"/>
-                    <Breadcrumb>
-                        <BreadcrumbList>
-                            <BreadcrumbItem className="hidden md:block">
-                                <BreadcrumbLink href={''}>Админ-панель</BreadcrumbLink>
-                            </BreadcrumbItem>
-                            <BreadcrumbSeparator className="hidden md:block"/>
-                            <BreadcrumbItem>
-                                <BreadcrumbPage>Книги</BreadcrumbPage>
-                            </BreadcrumbItem>
-                        </BreadcrumbList>
-                    </Breadcrumb>
-                </header>
-                <div className={'flex flex-1 flex-col gap-4 p-4'}>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>ID</TableHead>
-                                <TableHead className={'w-20'}>Название</TableHead>
-                                <TableHead>Описание</TableHead>
-                                <TableHead>Жанры</TableHead>
-                                <TableHead>Авторы</TableHead>
-                                <TableHead>Действие</TableHead>
+            <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+                <SidebarTrigger className="-ml-1"/>
+                <Separator orientation="vertical" className="mr-2 h-4"/>
+                <Breadcrumb>
+                    <BreadcrumbList>
+                        <BreadcrumbItem className="hidden md:block">
+                            <BreadcrumbLink href={''}>Админ-панель</BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator className="hidden md:block"/>
+                        <BreadcrumbItem>
+                            <BreadcrumbPage>Книги</BreadcrumbPage>
+                        </BreadcrumbItem>
+                    </BreadcrumbList>
+                </Breadcrumb>
+            </header>
+            <div className={'flex flex-1 flex-col gap-4 p-4'}>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>ID</TableHead>
+                            <TableHead className={'w-20'}>Название</TableHead>
+                            <TableHead>Описание</TableHead>
+                            <TableHead>Жанры</TableHead>
+                            <TableHead>Авторы</TableHead>
+                            <TableHead>Действие</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {books.map(book => (
+                            <TableRow key={book.id}>
+                                <TableCell>{book.id}</TableCell>
+                                <TableCell>{book.title}</TableCell>
+                                <TableCell className={'line-clamp-1'}>{book.description}</TableCell>
+                                <TableCell>
+                                    {book.genres.map(genre => {
+                                        return <Badge key={genre.id} variant={'outline'}>{genre.name}</Badge>
+                                    })}
+                                </TableCell>
+                                <TableCell className={'w-40'}>{book.authors.slice(0, 3).join(', ')}</TableCell>
+                                <TableCell className={'flex gap-4'}>
+                                    <Button variant={'outline'}
+                                            onClick={() => handleDeleteBook(book)}>Удалить</Button>
+                                    <Button variant={'outline'}
+                                            onClick={() => setSelectedBook(book)}>Редактировать</Button>
+                                </TableCell>
                             </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {books.map(book => (
-                                <TableRow key={book.id}>
-                                    <TableCell>{book.id}</TableCell>
-                                    <TableCell>{book.title}</TableCell>
-                                    <TableCell className={'line-clamp-1'}>{book.description}</TableCell>
-                                    <TableCell>
-                                        {book.genres.map(genre => {
-                                            return <Badge key={genre.id} variant={'outline'}>{genre.name}</Badge>
-                                        })}
-                                    </TableCell>
-                                    <TableCell className={'w-40'}>{book.authors.slice(0, 3).join(', ')}</TableCell>
-                                    <TableCell className={'flex gap-4'}>
-                                        <Button variant={'outline'}
-                                                onClick={() => handleDeleteBook(book)}>Удалить</Button>
-                                        <Button variant={'outline'}
-                                                onClick={() => setSelectedBook(book)}>Редактировать</Button>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </div>
-            </SidebarInset>
-        </SidebarProvider>
+                        ))}
+                    </TableBody>
+                </Table>
+            </div>
+        </>
     )
 }

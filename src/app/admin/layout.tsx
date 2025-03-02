@@ -4,6 +4,8 @@ import React, {useEffect} from 'react'
 import {useAuth} from '@/context/AuthContext'
 import {notFound} from 'next/navigation'
 import {Role} from '@/types/user'
+import {SidebarInset, SidebarProvider} from '@/components/ui/sidebar'
+import {AppSidebar} from '@/components/app-sidebar'
 
 export default function RootLayout({
     children
@@ -23,7 +25,12 @@ export default function RootLayout({
 
     return (
         <main className="min-h-screen">
-            {children}
+            <SidebarProvider>
+                <AppSidebar/>
+                <SidebarInset>
+                    {children}
+                </SidebarInset>
+            </SidebarProvider>
         </main>
     )
 }
